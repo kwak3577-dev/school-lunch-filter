@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>문정중학교 스마트 급식 알러지 필터</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Pretendard / Jua / Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Jua&family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet" />
+  <!-- QRCode.js for 4차시 공유 QR코드 생성 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <style>
+    :root {
+      --bg-pastel: #FFF8F0;
+      --bg-gradient-1: #FFF3E4;
+      --bg-gradient-2: #F3F8FF;
+      --brand-orange: #FF8A3D;
+      --brand-yellow: #FFB84D;
+      --brand-deep: #E86A17;
+      --clay-card-bg: #FFFFFF;
+    }
+
+    body {
+      font-family: 'Noto Sans KR', 'Inter', sans-serif;
+      background: radial-gradient(circle at 12% 15%, #FFEAD2 0%, transparent 45%),
+                  radial-gradient(circle at 88% 82%, #E2F1FF 0%, transparent 48%),
+                  var(--bg-pastel);
+      color: #2D3142;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .font-display {
+      font-family: 'Jua', 'Noto Sans KR', sans-serif;
+    }
+
+    /* 3D 클레이 모피즘 (Claymorphism) 핵심 스타일 */
+    .clay-card {
+      background: linear-gradient(145deg, #ffffff, #fffaf4);
+      border-radius: 32px;
+      border: 2px solid rgba(255, 255, 255, 0.9);
+      box-shadow:
+        14px 14px 28px rgba(217, 185, 155, 0.28),
+        -10px -10px 24px rgba(255, 255, 255, 0.95),
+        inset 4px 4px 10px rgba(255, 255, 255, 0.8),
+        inset -4px -4px 12px rgba(242, 214, 184, 0.35);
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease;
+    }
+
+    .clay-card-hover:hover {
+      transform: translateY(-4px);
+    }
+
+    /* 클레이 버튼 스타일 */
+    .clay-btn {
+      background: linear-gradient(145deg, #ffffff, #fff4e8);
+      border-radius: 20px;
+      border: 1.5px solid rgba(255, 255, 255, 0.95);
+      box-shadow:
+        6px 6px 14px rgba(214, 179, 146, 0.28),
+        -5px -5px 12px rgba(255, 255, 255, 0.95),
+        inset 2px 2px 5px rgba(255, 255, 255, 0.9),
+        inset -2px -2px 6px rgba(235, 200, 168, 0.35);
+      transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+      cursor: pointer;
+    }
+
+    .clay-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .clay-btn:active {
+      transform: scale(0.96);
+      box-shadow:
+        inset 4px 4px 8px rgba(214, 179, 146, 0.35),
+        inset -4px -4px 8px rgba(255, 255, 255, 0.9);
+    }
+
+    /* 브랜드 메인 오렌지 클레이 버튼 */
+    .clay-btn-primary {
+      background: linear-gradient(145deg, #FF9A52, #FF7B29);
+      color: #ffffff;
+      border-radius: 20px;
+      border: 1.5px solid rgba(255, 214, 184, 0.7);
+      box-shadow:
+        8px 8px 18px rgba(255, 123, 41, 0.32),
+        -5px -5px 12px rgba(255, 255, 255, 0.85),
+        inset 3px 3px 6px rgba(255, 210, 175, 0.6),
+        inset -3px -3px 8px rgba(209, 86, 12, 0.45);
+      transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+      cursor: pointer;
+    }
+
+    .clay-btn-primary:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.03);
+    }
+
+    .clay-btn-primary:active {
+      transform: scale(0.96);
+    }
+
+    /* 알레르기 필터 칩 (둥근 알약 모양 클레이 버튼) */
+    .allergy-chip {
+      background: linear-gradient(145deg, #ffffff, #f8f9fc);
+      border-radius: 9999px;
+      border: 1.5px solid rgba(255, 255, 255, 0.95);
+      box-shadow:
+        4px 4px 10px rgba(200, 185, 170, 0.25),
+        -4px -4px 10px rgba(255, 255, 255, 0.95),
+        inset 2px 2px 4px rgba(255, 255, 255, 0.8),
+        inset -2px -2px 5px rgba(215, 215, 225, 0.35);
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      user-select: none;
+    }
+
+    .allergy-chip:hover {
+      transform: translateY(-2px);
+    }
+
+    /* 선택된 알레르기 칩 (경고 활성화 상태) */
+    .allergy-chip.selected {
+      background: linear-gradient(145deg, #FF6B6B, #EE4242);
+      color: #ffffff;
+      border: 1.5px solid #FFA8A8;
+      box-shadow:
+        5px 5px 14px rgba(238, 66, 66, 0.35),
+        -4px -4px 10px rgba(255, 255, 255, 0.9),
+        inset 2px 2px 5px rgba(255, 180, 180, 0.6),
+        inset -3px -3px 6px rgba(180, 25, 25, 0.45);
+      transform: translateY(-1px) scale(1.03);
+    }
+
+    /* 내부 오목한 클레이 인풋/박스 */
+    .clay-inset {
+      background: #FFF6EC;
+      border-radius: 20px;
+      box-shadow:
+        inset 4px 4px 9px rgba(219, 188, 158, 0.32),
+        inset -4px -4px 9px rgba(255, 255, 255, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.7);
+    }
+
+    /* 메뉴 아이템 경고 카드 */
+    .menu-danger-box {
+      background: linear-gradient(145deg, #FFF0F0, #FFE2E2);
+      border: 2px solid #FF9E9E;
+      box-shadow:
+        6px 6px 14px rgba(239, 68, 68, 0.16),
+        -4px -4px 10px rgba(255, 255, 255, 0.9),
+        inset 2px 2px 5px rgba(255, 255, 255, 0.8);
+    }
+
+    /* 메뉴 아이템 안전 카드 */
+    .menu-safe-box {
+      background: linear-gradient(145deg, #FFFFFF, #FFFBF5);
+      border: 1.5px solid rgba(255, 255, 255, 0.95);
+      box-shadow:
+        5px 5px 12px rgba(222, 193, 165, 0.2),
+        -4px -4px 10px rgba(255, 255, 255, 0.95);
+    }
+
+    /* 부유 애니메이션 */
+    @keyframes floatSlow {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-5px) rotate(2deg); }
+    }
+    .animate-float {
+      animation: floatSlow 3.6s ease-in-out infinite;
+    }
+
+    /* 토스트 알림 애니메이션 */
+    @keyframes slideUpFade {
+      from { opacity: 0; transform: translate(-50%, 16px); }
+      to { opacity: 1; transform: translate(-50%, 0); }
+    }
+    .toast-anim {
+      animation: slideUpFade 0.25s ease-out forwards;
+    }
+  </style>
+</head>
+<body class="antialiased selection:bg-orange-200 selection:text-orange-900">
+
+  <!-- 메인 컨테이너 -->
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-10 space-y-6 sm:space-y-8">
+
+    <!-- 1. 상단 헤더 (문정중학교 로고 + 타이틀 + 오늘 날짜 + 유틸리티 버튼) -->
+    <header class="clay-card p-5 sm:p-7 relative overflow-hidden">
+      <!-- 배경 장식 버블 -->
+      <div class="absolute -top-10 -right-10 w-36 h-36 rounded-full bg-gradient-to-br from-orange-200/40 to-yellow-200/40 blur-xl pointer-events-none"></div>
+
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 relative z-10">
+        <!-- 로고 및 타이틀 -->
+        <div class="flex items-center gap-4">
+          <!-- 3D 클레이 스타일 급식 식판 SVG 일러스트 로고 -->
+          <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-3xl bg-gradient-to-br from-[#FFB84D] to-[#FF7B29] p-2.5 flex items-center justify-center shadow-lg shrink-0 animate-float border-2 border-white/80">
+            <svg viewBox="0 0 100 100" class="w-full h-full drop-shadow" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- 식판 본체 -->
+              <rect x="8" y="18" width="84" height="64" rx="18" fill="#FFFDF9" stroke="#FFE2C2" stroke-width="3"/>
+              <!-- 반찬 칸 3개 -->
+              <rect x="16" y="25" width="20" height="20" rx="7" fill="#FFE6CC"/>
+              <rect x="40" y="25" width="20" height="20" rx="7" fill="#FFD9B3"/>
+              <rect x="64" y="25" width="20" height="20" rx="7" fill="#FFE6CC"/>
+              <!-- 밥 칸 & 국 칸 -->
+              <rect x="16" y="50" width="38" height="24" rx="10" fill="#FFF2E2"/>
+              <circle cx="71" cy="62" r="12" fill="#FF9A52"/>
+              <!-- 웃는 밥알 캐릭터 -->
+              <circle cx="30" cy="61" r="2.2" fill="#5C3A21"/>
+              <circle cx="40" cy="61" r="2.2" fill="#5C3A21"/>
+              <path d="M32 65.5C33.5 67.5 36.5 67.5 38 65.5" stroke="#5C3A21" stroke-width="2.2" stroke-linecap="round"/>
+              <!-- 하트 포인트 -->
+              <path d="M50 32C48.5 30 45.5 30.5 45.5 33C45.5 35.5 50 38.5 50 38.5C50 38.5 54.5 35.5 54.5 33C54.5 30.5 51.5 30 50 32Z" fill="#FF5A5F"/>
+            </svg>
+          </div>
+
+          <div>
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-100/90 text-orange-700 text-xs font-bold mb-1.5 shadow-inner">
+              <span>🏫 문정중학교 학생 맞춤형 헬스케어</span>
+            </div>
+            <h1 class="font-display text-2xl sm:text-3xl text-gray-800 tracking-tight leading-snug">
+              문정중학교 <span class="text-[#FF7B29]">스마트 급식 알러지 필터</span>
+            </h1>
+            <p id="headerTodayText" class="text-xs sm:text-sm text-gray-500 font-medium mt-0.5">
+              오늘 날짜를 불러오는 중...
+            </p>
+          </div>
+        </div>
+
+        <!-- 상단 액션 버튼 (NEIS API 설정 / 공유 및 배포) -->
+        <div class="flex flex-wrap items-center gap-2.5 self-start md:self-center">
+          <button id="openApiModalBtn" class="clay-btn px-3.5 py-2.5 text-xs sm:text-sm font-bold text-gray-700 flex items-center gap-1.5">
+            <span>⚙️</span>
+            <span>나이스 API 설정</span>
+            <span id="apiStatusDot" class="w-2 h-2 rounded-full bg-amber-400" title="샘플 데이터 모드"></span>
+          </button>
+
+          <button id="openShareModalBtn" class="clay-btn-primary px-3.5 py-2.5 text-xs sm:text-sm font-bold flex items-center gap-1.5">
+            <span>🚀</span>
+            <span>공유 · QR 배포</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- 2. 알레르기 유발 식재료 필터 패널 (1~19번 칩 + localStorage 자동 저장) -->
+    <section class="clay-card p-5 sm:p-7">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+        <div>
+          <h2 class="font-display text-xl sm:text-2xl text-gray-800 flex items-center gap-2">
+            <span>🛡️ 내 알레르기 성분 선택</span>
+            <span id="selectedCountBadge" class="text-xs font-sans font-extrabold px-2.5 py-0.5 rounded-full bg-orange-100 text-orange-700">
+              0개 선택됨
+            </span>
+          </h2>
+          <p class="text-xs sm:text-sm text-gray-500 mt-0.5">
+            주의해야 할 알레르기 번호(1~19번)를 누르면 급식 메뉴에서 자동으로 위험 성분을 찾아 경고해 줍니다. (자동 저장)
+          </p>
+        </div>
+
+        <button id="resetAllergyBtn" class="clay-btn px-3 py-1.5 text-xs font-bold text-gray-600 hover:text-red-500 self-start sm:self-center shrink-0">
+          🔄 선택 초기화
+        </button>
+      </div>
+
+      <!-- 1~19번 알레르기 칩 그리드 -->
+      <div id="allergyChipsContainer" class="flex flex-wrap gap-2 sm:gap-2.5">
+        <!-- JS로 동적 생성 -->
+      </div>
+    </section>
+
+    <!-- 3. 날짜 탐색 바 & 급식 식단 결과 카드 -->
+    <section class="clay-card p-5 sm:p-7 space-y-6">
+      <!-- 날짜 탐색 컨트롤 -->
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pb-4 border-b border-orange-100">
+        <div class="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-start">
+          <button id="prevDayBtn" class="clay-btn px-3.5 py-2.5 text-sm font-bold text-gray-700 flex items-center gap-1" aria-label="이전 날">
+            <span>◀</span>
+            <span class="hidden xs:inline">이전 날</span>
+          </button>
+
+          <button id="todayBtn" class="clay-btn-primary px-4 py-2.5 text-sm font-bold">
+            오늘 식단
+          </button>
+
+          <button id="nextDayBtn" class="clay-btn px-3.5 py-2.5 text-sm font-bold text-gray-700 flex items-center gap-1" aria-label="다음 날">
+            <span class="hidden xs:inline">다음 날</span>
+            <span>▶</span>
+          </button>
+        </div>
+
+        <!-- 선택된 날짜 표시 & 달력(input date) -->
+        <div class="flex items-center gap-2.5 w-full sm:w-auto justify-between sm:justify-end">
+          <div id="selectedDateDisplay" class="font-display text-lg sm:text-xl text-gray-800">
+            2026년 11월 25일 (수)
+          </div>
+          <label class="clay-btn px-3 py-2 text-xs font-bold text-gray-700 flex items-center gap-1.5 cursor-pointer">
+            <span>📅</span>
+            <input type="date" id="datePickerInput" class="bg-transparent font-sans text-xs sm:text-sm font-bold text-gray-700 focus:outline-none cursor-pointer" />
+          </label>
+        </div>
+      </div>
+
+      <!-- 데이터 소스 안내 배너 -->
+      <div id="dataSourceBanner" class="clay-inset px-4 py-3 flex flex-wrap items-center justify-between gap-2 text-xs">
+        <div class="flex items-center gap-2">
+          <span class="text-base">🍱</span>
+          <span id="dataSourceText" class="font-semibold text-gray-700">
+            현재 <strong>문정중학교 기본 내장 식단 데이터</strong>로 표시 중입니다. (실시간 나이스 API 연동 가능)
+          </span>
+        </div>
+        <span id="mealCalorieBadge" class="px-3 py-1 rounded-full bg-white text-orange-600 font-extrabold shadow-sm">
+          🔥 845.2 Kcal
+        </span>
+      </div>
+
+      <!-- 알레르기 종합 요약 알림창 -->
+      <div id="allergySummaryAlert" class="hidden rounded-2xl p-4 bg-red-50 border-2 border-red-200 flex items-start gap-3">
+        <span class="text-2xl leading-none">🚨</span>
+        <div>
+          <h3 class="font-bold text-red-700 text-sm sm:text-base">오늘 급식에 주의해야 할 알레르기 메뉴가 있습니다!</h3>
+          <p id="allergySummaryDetail" class="text-xs sm:text-sm text-red-600 mt-0.5 font-medium"></p>
+        </div>
+      </div>
+
+      <!-- 급식 식단 메뉴 리스트 영역 -->
+      <div id="mealContentArea" class="space-y-4">
+        <!-- JS로 동적 렌더링 -->
+      </div>
+
+      <!-- 영양정보 및 원산지 정보 접이식 상세 -->
+      <div id="nutritionOriginGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+        <div class="clay-inset p-4">
+          <h4 class="font-bold text-xs sm:text-sm text-orange-800 mb-1.5 flex items-center gap-1.5">
+            <span>📊</span> <span>영양정보 요약</span>
+          </h4>
+          <p id="nutritionInfoText" class="text-xs text-gray-600 leading-relaxed">
+            탄수화물 118.4g · 단백질 34.2g · 지방 24.8g · 칼슘 310.5mg · 철분 4.8mg
+          </p>
+        </div>
+        <div class="clay-inset p-4">
+          <h4 class="font-bold text-xs sm:text-sm text-orange-800 mb-1.5 flex items-center gap-1.5">
+            <span>🌱</span> <span>주요 식재료 원산지</span>
+          </h4>
+          <p id="originInfoText" class="text-xs text-gray-600 leading-relaxed">
+            쌀(국내산), 돼지고기(국내산), 닭고기(국내산), 배추김치(배추:국내산, 고춧가루:국내산)
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. 푸터 (수업 연계 안내) -->
+    <footer class="text-center text-xs text-gray-500 pb-6 space-y-1">
+      <p class="font-semibold text-gray-600">
+        중등과학 바이브 코딩 프로젝트 · 문정중학교 급식 알러지 필터 웹앱
+      </p>
+      <p>
+        1~19번 알레르기 표시 기준: 식품의약품안전처 및 교육부 학교급식 알레르기 유발식품 표시제 준수
+      </p>
+    </footer>
+  </div>
+
+  <!-- =========================================================
+       모달 1: 나이스(NEIS) API 설정 모달 (2차시 수업 내용 반영)
+  ========================================================= -->
+  <div id="apiModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+    <div class="clay-card max-w-lg w-full p-6 sm:p-7 space-y-5 relative max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between">
+        <h3 class="font-display text-xl sm:text-2xl text-gray-800 flex items-center gap-2">
+          <span>🔌</span>
+          <span>나이스(NEIS) 급식 API 설정</span>
+        </h3>
+        <button id="closeApiModalBtn" class="clay-btn w-9 h-9 flex items-center justify-center font-bold text-gray-600">✕</button>
+      </div>
+
+      <p class="text-xs sm:text-sm text-gray-600 leading-relaxed">
+        나이스 교육정보 개방 포털(<code class="bg-orange-100 px-1.5 py-0.5 rounded text-orange-800">open.neis.go.kr</code>)에서 발급받은 인증키와 학교 코드를 입력하면 실시간 문정중학교 급식 식단을 불러옵니다.
+      </p>
+
+      <div class="space-y-3.5 text-sm">
+        <div>
+          <label class="block font-bold text-gray-700 mb-1 text-xs">NEIS API 인증키 (KEY)</label>
+          <input type="text" id="neisApiKeyInput" placeholder="예: a1b2c3d4e5f6... (비워두면 샘플 데이터 사용)"
+                 class="w-full clay-inset px-4 py-2.5 text-xs sm:text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-orange-400" />
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-gray-700 mb-1 text-xs">시도교육청 코드 (ATPT_OFCDC_SC_CODE)</label>
+            <select id="neisOfficeCodeInput" class="w-full clay-inset px-3.5 py-2.5 text-xs sm:text-sm text-gray-800 focus:outline-none">
+              <option value="B10">B10 - 서울특별시교육청</option>
+              <option value="J10">J10 - 경기도교육청</option>
+              <option value="E10">E10 - 인천광역시교육청</option>
+              <option value="C10">C10 - 부산광역시교육청</option>
+              <option value="D10">D10 - 대구광역시교육청</option>
+              <option value="F10">F10 - 광주광역시교육청</option>
+              <option value="G10">G10 - 대전광역시교육청</option>
+              <option value="H10">H10 - 울산광역시교육청</option>
+              <option value="I10">I10 - 세종특별자치시교육청</option>
+              <option value="K10">K10 - 강원특별자치도교육청</option>
+              <option value="M10">M10 - 충청북도교육청</option>
+              <option value="N10">N10 - 충청남도교육청</option>
+              <option value="P10">P10 - 전북특별자치도교육청</option>
+              <option value="Q10">Q10 - 전라남도교육청</option>
+              <option value="R10">R10 - 경상북도교육청</option>
+              <option value="S10">S10 - 경상남도교육청</option>
+              <option value="T10">T10 - 제주특별자치도교육청</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block font-bold text-gray-700 mb-1 text-xs">행정표준코드 (SD_SCHUL_CODE)</label>
+            <input type="text" id="neisSchoolCodeInput" value="7130175" placeholder="예: 7130175 (서울 문정중)"
+                   class="w-full clay-inset px-4 py-2.5 text-xs sm:text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-orange-400" />
+          </div>
+        </div>
+
+        <div class="bg-amber-50 border border-amber-200 rounded-2xl p-3 text-xs text-amber-800 space-y-1">
+          <p class="font-bold">💡 참고 안내</p>
+          <p>• 서울 송파구 문정중학교 기본 코드: 교육청 <code class="font-bold">B10</code> / 학교코드 <code class="font-bold">7130175</code></p>
+          <p>• 인증키가 없거나 네트워크(CORS) 제한 시 자동으로 내장 샘플 급식 데이터로 안전하게 전환됩니다.</p>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2.5 pt-2">
+        <button id="useSampleModeBtn" class="clay-btn px-4 py-2.5 text-xs sm:text-sm font-bold text-gray-700">
+          샘플 모드 사용
+        </button>
+        <button id="saveApiSettingsBtn" class="clay-btn-primary px-5 py-2.5 text-xs sm:text-sm font-bold">
+          저장 및 식단 불러오기
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       모달 2: 배포 및 공유 안내 모달 (4차시 수업 내용 반영)
+  ========================================================= -->
+  <div id="shareModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+    <div class="clay-card max-w-lg w-full p-6 sm:p-7 space-y-5 relative max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between">
+        <h3 class="font-display text-xl sm:text-2xl text-gray-800 flex items-center gap-2">
+          <span>🚀</span>
+          <span>급식 웹앱 공유 및 배포 가이드</span>
+        </h3>
+        <button id="closeShareModalBtn" class="clay-btn w-9 h-9 flex items-center justify-center font-bold text-gray-600">✕</button>
+      </div>
+
+      <!-- QR 코드 및 링크 복사 영역 -->
+      <div class="clay-inset p-4 flex flex-col sm:flex-row items-center gap-4">
+        <div id="qrcodeContainer" class="bg-white p-2.5 rounded-2xl shadow-sm border border-orange-100 shrink-0"></div>
+        <div class="space-y-2 text-center sm:text-left flex-1 min-w-0">
+          <span class="inline-block px-2.5 py-0.5 rounded-full bg-orange-100 text-orange-700 text-xs font-bold">
+            📱 스마트폰 QR 접속
+          </span>
+          <h4 class="font-bold text-gray-800 text-sm">친구들과 문정중 급식 앱 공유하기</h4>
+          <p class="text-xs text-gray-500">
+            카메라로 QR 코드를 스캔하거나 아래 주소 복사 버튼을 눌러 공유해 보세요.
+          </p>
+          <div class="flex items-center gap-1.5 pt-1">
+            <input type="text" id="shareUrlInput" readonly
+                   class="w-full bg-white rounded-xl px-3 py-2 text-xs text-gray-600 border border-orange-100 focus:outline-none" />
+            <button id="copyUrlBtn" class="clay-btn-primary px-3 py-2 text-xs font-bold shrink-0">
+              복사
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4차시 GitHub & Vercel 배포 가이드 요약 -->
+      <div class="space-y-2.5">
+        <h4 class="font-bold text-sm text-gray-800 flex items-center gap-1.5">
+          <span>🌐</span>
+          <span>나만의 정식 웹주소 만들기 (GitHub + Vercel 3단계 배포)</span>
+        </h4>
+        <div class="space-y-2 text-xs text-gray-600">
+          <div class="bg-white/80 rounded-2xl p-3 border border-orange-100 flex items-start gap-2.5">
+            <span class="w-5 h-5 rounded-full bg-orange-500 text-white font-bold flex items-center justify-center shrink-0 mt-0.5">1</span>
+            <div>
+              <p class="font-bold text-gray-800">GitHub 저장소(Repository) 생성 및 코드 업로드</p>
+              <p class="text-gray-500 mt-0.5">새 저장소(예: <code class="text-orange-700">munjeong-meal-app</code>)를 만들고 이 HTML 파일을 <code class="text-orange-700">index.html</code> 이름으로 업로드합니다.</p>
+            </div>
+          </div>
+
+          <div class="bg-white/80 rounded-2xl p-3 border border-orange-100 flex items-start gap-2.5">
+            <span class="w-5 h-5 rounded-full bg-orange-500 text-white font-bold flex items-center justify-center shrink-0 mt-0.5">2</span>
+            <div>
+              <p class="font-bold text-gray-800">Vercel 연동 및 원클릭 배포(Deploy)</p>
+              <p class="text-gray-500 mt-0.5"><code class="text-orange-700">vercel.com</code>에 GitHub 계정으로 로그인 후 방금 만든 저장소를 선택하고 <strong>Deploy</strong> 버튼을 클릭합니다.</p>
+            </div>
+          </div>
+
+          <div class="bg-white/80 rounded-2xl p-3 border border-orange-100 flex items-start gap-2.5">
+            <span class="w-5 h-5 rounded-full bg-orange-500 text-white font-bold flex items-center justify-center shrink-0 mt-0.5">3</span>
+            <div>
+              <p class="font-bold text-gray-800">고유 도메인 주소 완성!</p>
+              <p class="text-gray-500 mt-0.5">약 30초 뒤 <code class="text-orange-700">https://munjeong-meal-app.vercel.app</code> 형태의 고유 인터넷 주소가 생성됩니다.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 토스트 메시지 박스 (alert 대신 사용) -->
+  <div id="toastBox" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 hidden">
+    <div id="toastContent" class="clay-btn-primary px-5 py-3 text-xs sm:text-sm font-bold shadow-xl flex items-center gap-2">
+      <span>✅</span>
+      <span id="toastMessage">알림 메시지</span>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       JavaScript 로직
+  ========================================================= -->
+  <script>
+    /**
+     * 1. 알레르기 유발 식재료 표준 1~19번 정의
+     */
+    const ALLERGY_LIST = [
+      { id: 1, name: '난류(가금류)', emoji: '🥚' },
+      { id: 2, name: '우유', emoji: '🥛' },
+      { id: 3, name: '메밀', emoji: '🌾' },
+      { id: 4, name: '땅콩', emoji: '🥜' },
+      { id: 5, name: '대두', emoji: '🫘' },
+      { id: 6, name: '밀', emoji: '🍞' },
+      { id: 7, name: '고등어', emoji: '🐟' },
+      { id: 8, name: '게', emoji: '🦀' },
+      { id: 9, name: '새우', emoji: '🦐' },
+      { id: 10, name: '돼지고기', emoji: '🐷' },
+      { id: 11, name: '복숭아', emoji: '🍑' },
+      { id: 12, name: '토마토', emoji: '🍅' },
+      { id: 13, name: '아황산류', emoji: '🧪' },
+      { id: 14, name: '호두', emoji: '🌰' },
+      { id: 15, name: '닭고기', emoji: '🍗' },
+      { id: 16, name: '쇠고기', emoji: '🥩' },
+      { id: 17, name: '오징어', emoji: '🦑' },
+      { id: 18, name: '조개류', emoji: '🦪' },
+      { id: 19, name: '잣', emoji: '🌲' }
+    ];
+
+    /**
+     * 2. 문정중학교 기본 내장 샘플 급식 식단 데이터 (요일별 순환 + 오늘 기준 맞춤 식단)
+     * 나이스 API와 동일한 표기 형식 (메뉴명 + (1.2.5.6.10))을 사용
+     */
+    const SAMPLE_WEEKLY_MEALS = [
+      // 일요일 (주말 안내용)
+      null,
+      // 월요일
+      {
+        calInfo: '842.5 Kcal',
+        ntrInfo: '탄수화물 121.3g · 단백질 35.8g · 지방 23.1g · 칼슘 295.0mg · 철분 5.1mg',
+        orplcInfo: '쌀(국내산), 돼지고기(국내산), 두부(대두:국내산), 배추김치(배추:국내산, 고춧가루:국내산)',
+        dishes: [
+          '발아현미밥',
+          '한우쇠고기무국 (5.6.16)',
+          '매콤돼지갈비찜 (5.6.10.13)',
+          '해물파전 (1.5.6.9.17.18)',
+          '시금치나물무침 (5.6)',
+          '배추김치 (9)',
+          '사과주스 (13)'
+        ]
+      },
+      // 화요일
+      {
+        calInfo: '868.0 Kcal',
+        ntrInfo: '탄수화물 125.0g · 단백질 38.4g · 지방 24.5g · 칼슘 340.2mg · 철분 4.9mg',
+        orplcInfo: '쌀(국내산), 닭고기(국내산), 우유(국내산), 토마토(국내산), 배추김치(국내산)',
+        dishes: [
+          '차수수밥',
+          '근대된장국 (5.6.18)',
+          '오븐치즈불닭 (2.5.6.12.13.15)',
+          '감자채햄볶음 (1.2.5.6.10.15)',
+          '오이부추무침 (5.6.13)',
+          '배추김치 (9)',
+          '떠먹는요구르트 (2)'
+        ]
+      },
+      // 수요일 (특식/수다날 컨셉)
+      {
+        calInfo: '895.4 Kcal',
+        ntrInfo: '탄수화물 130.2g · 단백질 36.1g · 지방 25.9g · 칼슘 315.8mg · 철분 5.4mg',
+        orplcInfo: '쌀(국내산), 쇠고기(한우:국내산), 새우(베트남산), 계란(국내산), 김치(국내산)',
+        dishes: [
+          '수제왕새우튀김카레라이스 (1.2.5.6.9.10.12.13.16)',
+          '유부장국 (5.6)',
+          '회오리감자튀김 (5.6)',
+          '양배추콘샐러드 (1.2.5.6.13)',
+          '깍두기 (9)',
+          '복숭아아이스티 (11)'
+        ]
+      },
+      // 목요일
+      {
+        calInfo: '830.7 Kcal',
+        ntrInfo: '탄수화물 116.8g · 단백질 37.5g · 지방 22.8g · 칼슘 328.4mg · 철분 5.0mg',
+        orplcInfo: '쌀(국내산), 고등어(국내산), 오리고기(국내산), 두부(국내산), 김치(국내산)',
+        dishes: [
+          '기장밥',
+          '순두부찌개 (1.5.6.9.10.18)',
+          '순살고등어카레구이 (2.5.6.7.12.16)',
+          '잡채 (5.6.8.10.13)',
+          '숙주나물무침 (5.6)',
+          '배추김치 (9)',
+          '호두파이 (1.2.4.5.6.14)'
+        ]
+      },
+      // 금요일
+      {
+        calInfo: '856.2 Kcal',
+        ntrInfo: '탄수화물 122.4g · 단백질 35.0g · 지방 24.1g · 칼슘 302.6mg · 철분 4.7mg',
+        orplcInfo: '쌀(국내산), 닭고기(국내산), 오징어(원양산), 견과류(국내산/미국산), 김치(국내산)',
+        dishes: [
+          '흑미밥',
+          '닭곰탕 (5.6.15)',
+          '오징어삼겹불고기 (5.6.10.13.17)',
+          '계란말이 (1.2.5)',
+          '멸치견과류볶음 (4.5.6.13.14.19)',
+          '배추김치 (9)',
+          '방울토마토 (12)'
+        ]
+      },
+      // 토요일 (주말 안내용)
+      null
+    ];
+
+    /**
+     * 3. 전역 상태(State) 관리
+     */
+    const STORAGE_KEYS = {
+      ALLERGIES: 'munjeong_selected_allergies_v1',
+      NEIS_CONFIG: 'munjeong_neis_config_v1'
+    };
+
+    let state = {
+      currentDate: new Date(),
+      selectedAllergies: [],
+      neisConfig: {
+        apiKey: '',
+        officeCode: 'B10',
+        schoolCode: '7130175'
+      },
+      isUsingLiveApi: false
+    };
+
+    /**
+     * 4. 초기화 및 이벤트 바인딩
+     */
+    document.addEventListener('DOMContentLoaded', () => {
+      loadSavedState();
+      renderHeaderToday();
+      renderAllergyChips();
+      bindEvents();
+      loadMealForDate(state.currentDate);
+    });
+
+    function loadSavedState() {
+      try {
+        const savedAllergies = localStorage.getItem(STORAGE_KEYS.ALLERGIES);
+        if (savedAllergies) {
+          state.selectedAllergies = JSON.parse(savedAllergies);
+        }
+        const savedConfig = localStorage.getItem(STORAGE_KEYS.NEIS_CONFIG);
+        if (savedConfig) {
+          state.neisConfig = { ...state.neisConfig, ...JSON.parse(savedConfig) };
+        }
+      } catch (e) {
+        console.error('로컬 스토리지 불러오기 오류:', e);
+      }
+
+      // API 설정 입력창 초기값 반영
+      document.getElementById('neisApiKeyInput').value = state.neisConfig.apiKey || '';
+      document.getElementById('neisOfficeCodeInput').value = state.neisConfig.officeCode || 'B10';
+      document.getElementById('neisSchoolCodeInput').value = state.neisConfig.schoolCode || '7130175';
+    }
+
+    function saveSelectedAllergies() {
+      try {
+        localStorage.setItem(STORAGE_KEYS.ALLERGIES, JSON.stringify(state.selectedAllergies));
+      } catch (e) {
+        console.error('알레르기 설정 저장 오류:', e);
+      }
+    }
+
+    /**
+     * 5. 날짜 포맷 유틸리티
+     */
+    function formatKoreanDate(date) {
+      const days = ['일', '월', '화', '수', '목', '금', '토'];
+      const y = date.getFullYear();
+      const m = date.getMonth() + 1;
+      const d = date.getDate();
+      const dayName = days[date.getDay()];
+      return `${y}년 ${m}월 ${d}일 (${dayName})`;
+    }
+
+    function formatYMD(date) {
+      const y = date.getFullYear();
+      const m = String(date.getMonth() + 1).padStart(2, '0');
+      const d = String(date.getDate()).padStart(2, '0');
+      return `${y}${m}${d}`;
+    }
+
+    function formatInputDate(date) {
+      const y = date.getFullYear();
+      const m = String(date.getMonth() + 1).padStart(2, '0');
+      const d = String(date.getDate()).padStart(2, '0');
+      return `${y}-${m}-${d}`;
+    }
+
+    function renderHeaderToday() {
+      const now = new Date();
+      document.getElementById('headerTodayText').textContent = `오늘: ${formatKoreanDate(now)} · 서울 문정중학교`;
+    }
+
+    /**
+     * 6. 알레르기 1~19번 칩 렌더링 및 토글
+     */
+    function renderAllergyChips() {
+      const container = document.getElementById('allergyChipsContainer');
+      container.innerHTML = '';
+
+      ALLERGY_LIST.forEach(item => {
+        const isSelected = state.selectedAllergies.includes(item.id);
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `allergy-chip px-3.5 py-2 text-xs sm:text-sm font-bold flex items-center gap-1.5 ${isSelected ? 'selected' : 'text-gray-700'}`;
+        btn.innerHTML = `
+          <span>${item.emoji}</span>
+          <span>${item.id}.${item.name}</span>
+        `;
+        btn.addEventListener('click', () => toggleAllergy(item.id));
+        container.appendChild(btn);
+      });
+
+      const badge = document.getElementById('selectedCountBadge');
+      badge.textContent = `${state.selectedAllergies.length}개 선택됨`;
+      if (state.selectedAllergies.length > 0) {
+        badge.className = 'text-xs font-sans font-extrabold px-2.5 py-0.5 rounded-full bg-red-100 text-red-600';
+      } else {
+        badge.className = 'text-xs font-sans font-extrabold px-2.5 py-0.5 rounded-full bg-orange-100 text-orange-700';
+      }
+    }
+
+    function toggleAllergy(id) {
+      const idx = state.selectedAllergies.indexOf(id);
+      if (idx > -1) {
+        state.selectedAllergies.splice(idx, 1);
+      } else {
+        state.selectedAllergies.push(id);
+        state.selectedAllergies.sort((a, b) => a - b);
+      }
+      saveSelectedAllergies();
+      renderAllergyChips();
+      loadMealForDate(state.currentDate);
+    }
+
+    /**
+     * 7. 급식 메뉴 파싱 및 알레르기 매칭 로직
+     * 예: "오븐치즈불닭 (2.5.6.12.13.15)" -> 메뉴명과 알레르기 번호 배열 추출
+     */
+    function parseDishString(rawDish) {
+      // 괄호 안의 숫자.숫자 패턴 추출
+      const match = rawDish.match(/\(([0-9.]+)\)/);
+      let allergyIds = [];
+      let cleanName = rawDish.trim();
+
+      if (match) {
+        allergyIds = match[1]
+          .split('.')
+          .map(num => parseInt(num, 10))
+          .filter(num => !isNaN(num) && num >= 1 && num <= 19);
+        cleanName = rawDish.replace(match[0], '').trim();
+      }
+
+      return {
+        cleanName,
+        allergyIds
+      };
+    }
+
+    /**
+     * 8. 급식 데이터 불러오기 (NEIS 실시간 API 또는 내장 샘플 데이터)
+     */
+    async function loadMealForDate(targetDate) {
+      document.getElementById('selectedDateDisplay').textContent = formatKoreanDate(targetDate);
+      document.getElementById('datePickerInput').value = formatInputDate(targetDate);
+
+      const apiKey = (state.neisConfig.apiKey || '').trim();
+      const officeCode = (state.neisConfig.officeCode || 'B10').trim();
+      const schoolCode = (state.neisConfig.schoolCode || '7130175').trim();
+
+      if (apiKey) {
+        // 실제 나이스 API 호출 시도
+        try {
+          renderLoadingState();
+          const ymd = formatYMD(targetDate);
+          const url = `https://open.neis.go.kr/hub/mealServiceDietInfo?KEY=${encodeURIComponent(apiKey)}&Type=json&pIndex=1&pSize=5&ATPT_OFCDC_SC_CODE=${encodeURIComponent(officeCode)}&SD_SCHUL_CODE=${encodeURIComponent(schoolCode)}&MLSV_YMD=${ymd}`;
+
+          const response = await fetch(url);
+          if (!response.ok) throw new Error('네트워크 응답 오류');
+          const data = await response.json();
+
+          if (data.mealServiceDietInfo && data.mealServiceDietInfo[1] && data.mealServiceDietInfo[1].row) {
+            // 중식(MMEAL_SC_CODE === '2') 우선 선택, 없으면 첫 번째 식단
+            const rows = data.mealServiceDietInfo[1].row;
+            const lunchRow = rows.find(r => r.MMEAL_SC_CODE === '2') || rows[0];
+
+            const dishes = lunchRow.DDISH_NM
+              .split(/<br\s*\/?>/i)
+              .map(s => s.trim())
+              .filter(Boolean);
+
+            state.isUsingLiveApi = true;
+            updateApiStatusUI(true);
+            renderMealCard({
+              calInfo: lunchRow.CAL_INFO || '정보 없음',
+              ntrInfo: (lunchRow.NTR_INFO || '').replace(/<br\s*\/?>/gi, ' · ') || '영양정보 제공 안됨',
+              orplcInfo: (lunchRow.ORPLC_INFO || '').replace(/<br\s*\/?>/gi, ', ') || '원산지 정보 제공 안됨',
+              dishes
+            });
+            return;
+          } else {
+            // 해당 날짜에 나이스 등록 급식이 없는 경우 (주말/방학/공휴일)
+            state.isUsingLiveApi = true;
+            updateApiStatusUI(true);
+            renderEmptyMeal(targetDate, '나이스(NEIS) 포털에 해당 날짜의 등록된 급식 식단이 없습니다. (주말·공휴일·방학)');
+            return;
+          }
+        } catch (err) {
+          console.warn('나이스 API 호출 실패, 샘플 데이터로 전환합니다:', err);
+          showToast('나이스 API 연결에 실패하여 기본 샘플 식단으로 표시합니다.');
+        }
+      }
+
+      // 샘플 데이터 모드
+      state.isUsingLiveApi = false;
+      updateApiStatusUI(false);
+      const dayOfWeek = targetDate.getDay();
+      const sampleMeal = SAMPLE_WEEKLY_MEALS[dayOfWeek];
+
+      if (!sampleMeal) {
+        renderEmptyMeal(targetDate, '주말(토·일요일)에는 학교 급식이 운영되지 않습니다. 평일 날짜를 선택해 주세요!');
+      } else {
+        renderMealCard(sampleMeal);
+      }
+    }
+
+    function updateApiStatusUI(isLive) {
+      const dot = document.getElementById('apiStatusDot');
+      const sourceText = document.getElementById('dataSourceText');
+      if (isLive) {
+        dot.className = 'w-2 h-2 rounded-full bg-emerald-500 animate-pulse';
+        sourceText.innerHTML = '현재 <strong class="text-emerald-700">나이스(NEIS) 실시간 교육정보 API</strong>와 연동되어 있습니다.';
+      } else {
+        dot.className = 'w-2 h-2 rounded-full bg-amber-400';
+        sourceText.innerHTML = '현재 <strong>문정중학교 기본 내장 식단 데이터</strong>로 표시 중입니다. (우측 상단에서 나이스 API 연동 가능)';
+      }
+    }
+
+    function renderLoadingState() {
+      const area = document.getElementById('mealContentArea');
+      area.innerHTML = `
+        <div class="py-12 text-center space-y-3">
+          <div class="inline-block w-10 h-10 border-4 border-orange-300 border-t-orange-600 rounded-full animate-spin"></div>
+          <p class="text-sm font-bold text-gray-600">나이스(NEIS)에서 문정중학교 급식 식단을 불러오는 중...</p>
+        </div>
+      `;
+    }
+
+    function renderEmptyMeal(date, message) {
+      document.getElementById('mealCalorieBadge').textContent = '급식 미운영일';
+      document.getElementById('allergySummaryAlert').classList.add('hidden');
+      document.getElementById('nutritionOriginGrid').classList.add('hidden');
+
+      const area = document.getElementById('mealContentArea');
+      area.innerHTML = `
+        <div class="clay-inset py-12 px-6 text-center space-y-3">
+          <div class="text-4xl">🗓️</div>
+          <h3 class="font-display text-xl text-gray-700">등록된 급식 식단이 없습니다</h3>
+          <p class="text-xs sm:text-sm text-gray-500 max-w-md mx-auto">${message}</p>
+        </div>
+      `;
+    }
+
+    function renderMealCard(mealData) {
+      document.getElementById('mealCalorieBadge').textContent = `🔥 ${mealData.calInfo}`;
+      document.getElementById('nutritionInfoText').textContent = mealData.ntrInfo;
+      document.getElementById('originInfoText').textContent = mealData.orplcInfo;
+      document.getElementById('nutritionOriginGrid').classList.remove('hidden');
+
+      const area = document.getElementById('mealContentArea');
+      area.innerHTML = '';
+
+      let dangerousDishesSummary = [];
+
+      mealData.dishes.forEach((rawDish) => {
+        const { cleanName, allergyIds } = parseDishString(rawDish);
+
+        // 사용자가 선택한 알레르기와 겹치는 번호 찾기
+        const matchedIds = allergyIds.filter(id => state.selectedAllergies.includes(id));
+        const hasDanger = matchedIds.length > 0;
+
+        if (hasDanger) {
+          const matchedNames = matchedIds.map(id => {
+            const info = ALLERGY_LIST.find(a => a.id === id);
+            return info ? info.name : `${id}번`;
+          });
+          dangerousDishesSummary.push(`${cleanName}(${matchedNames.join(', ')})`);
+        }
+
+        // 메뉴 아이템 카드 생성
+        const card = document.createElement('div');
+        card.className = `rounded-2xl p-4 sm:p-5 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
+          hasDanger ? 'menu-danger-box' : 'menu-safe-box'
+        }`;
+
+        // 알레르기 번호 태그 HTML 생성
+        const tagsHtml = allergyIds.length > 0
+          ? allergyIds.map(id => {
+              const info = ALLERGY_LIST.find(a => a.id === id);
+              const label = info ? `${id}.${info.name}` : `${id}번`;
+              const isMatched = matchedIds.includes(id);
+
+              if (isMatched) {
+                return `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-extrabold bg-red-600 text-white shadow-sm animate-pulse">
+                          ⚠️ ${label}
+                        </span>`;
+              }
+              return `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-orange-100/80 text-orange-800">
+                        ${label}
+                      </span>`;
+            }).join('')
+          : `<span class="text-xs text-emerald-600 font-semibold">✓ 표시 알레르기 없음</span>`;
+
+        card.innerHTML = `
+          <div class="space-y-1.5">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="text-base sm:text-lg font-extrabold ${hasDanger ? 'text-red-700' : 'text-gray-800'}">
+                ${cleanName}
+              </span>
+              ${hasDanger
+                ? `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-red-600 text-white shadow">
+                    ⚠️ 알러지 유발 주의
+                   </span>`
+                : ''
+              }
+            </div>
+            <div class="flex flex-wrap gap-1.5">
+              ${tagsHtml}
+            </div>
+          </div>
+
+          <div class="shrink-0 self-end sm:self-center">
+            ${hasDanger
+              ? `<span class="text-xs font-extrabold text-red-600 bg-white/90 px-3 py-1.5 rounded-xl border border-red-200 shadow-sm">섭취 주의!</span>`
+              : `<span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-100">안심 메뉴</span>`
+            }
+          </div>
+        `;
+
+        area.appendChild(card);
+      });
+
+      // 상단 알레르기 종합 요약 배너 업데이트
+      const summaryAlert = document.getElementById('allergySummaryAlert');
+      const summaryDetail = document.getElementById('allergySummaryDetail');
+      if (dangerousDishesSummary.length > 0) {
+        summaryAlert.classList.remove('hidden');
+        summaryDetail.textContent = `주의 메뉴 (${dangerousDishesSummary.length}가지): ${dangerousDishesSummary.join(' / ')}`;
+      } else {
+        summaryAlert.classList.add('hidden');
+      }
+    }
+
+    /**
+     * 9. 이벤트 리스너 바인딩 (날짜 이동, 모달, QR, 클립보드 복사)
+     */
+    function bindEvents() {
+      // 날짜 탐색 버튼
+      document.getElementById('prevDayBtn').addEventListener('click', () => {
+        state.currentDate.setDate(state.currentDate.getDate() - 1);
+        loadMealForDate(state.currentDate);
+      });
+
+      document.getElementById('nextDayBtn').addEventListener('click', () => {
+        state.currentDate.setDate(state.currentDate.getDate() + 1);
+        loadMealForDate(state.currentDate);
+      });
+
+      document.getElementById('todayBtn').addEventListener('click', () => {
+        state.currentDate = new Date();
+        loadMealForDate(state.currentDate);
+        showToast('오늘 날짜의 급식 식단으로 이동했습니다.');
+      });
+
+      document.getElementById('datePickerInput').addEventListener('change', (e) => {
+        if (e.target.value) {
+          const [y, m, d] = e.target.value.split('-').map(Number);
+          state.currentDate = new Date(y, m - 1, d);
+          loadMealForDate(state.currentDate);
+        }
+      });
+
+      // 알레르기 선택 초기화
+      document.getElementById('resetAllergyBtn').addEventListener('click', () => {
+        state.selectedAllergies = [];
+        saveSelectedAllergies();
+        renderAllergyChips();
+        loadMealForDate(state.currentDate);
+        showToast('선택한 알레르기 필터가 초기화되었습니다.');
+      });
+
+      // NEIS API 모달 열기/닫기
+      const apiModal = document.getElementById('apiModal');
+      document.getElementById('openApiModalBtn').addEventListener('click', () => {
+        apiModal.classList.remove('hidden');
+        apiModal.classList.add('flex');
+      });
+      document.getElementById('closeApiModalBtn').addEventListener('click', () => {
+        apiModal.classList.add('hidden');
+        apiModal.classList.remove('flex');
+      });
+
+      // NEIS API 설정 저장
+      document.getElementById('saveApiSettingsBtn').addEventListener('click', () => {
+        state.neisConfig = {
+          apiKey: document.getElementById('neisApiKeyInput').value.trim(),
+          officeCode: document.getElementById('neisOfficeCodeInput').value.trim() || 'B10',
+          schoolCode: document.getElementById('neisSchoolCodeInput').value.trim() || '7130175'
+        };
+        localStorage.setItem(STORAGE_KEYS.NEIS_CONFIG, JSON.stringify(state.neisConfig));
+        apiModal.classList.add('hidden');
+        apiModal.classList.remove('flex');
+        loadMealForDate(state.currentDate);
+        showToast(state.neisConfig.apiKey ? '나이스 API 설정이 저장되었습니다!' : '샘플 데이터 모드로 설정되었습니다.');
+      });
+
+      // 샘플 모드 즉시 전환
+      document.getElementById('useSampleModeBtn').addEventListener('click', () => {
+        document.getElementById('neisApiKeyInput').value = '';
+        state.neisConfig.apiKey = '';
+        localStorage.setItem(STORAGE_KEYS.NEIS_CONFIG, JSON.stringify(state.neisConfig));
+        apiModal.classList.add('hidden');
+        apiModal.classList.remove('flex');
+        loadMealForDate(state.currentDate);
+        showToast('기본 내장 샘플 식단 모드로 전환되었습니다.');
+      });
+
+      // 공유 & 배포 모달 열기/닫기
+      const shareModal = document.getElementById('shareModal');
+      document.getElementById('openShareModalBtn').addEventListener('click', () => {
+        shareModal.classList.remove('hidden');
+        shareModal.classList.add('flex');
+        generateShareQR();
+      });
+      document.getElementById('closeShareModalBtn').addEventListener('click', () => {
+        shareModal.classList.add('hidden');
+        shareModal.classList.remove('flex');
+      });
+
+      // 링크 복사 버튼 (iFrame 호환 document.execCommand 사용)
+      document.getElementById('copyUrlBtn').addEventListener('click', () => {
+        const urlInput = document.getElementById('shareUrlInput');
+        urlInput.select();
+        urlInput.setSelectionRange(0, 99999);
+        try {
+          document.execCommand('copy');
+          showToast('웹앱 주소가 클립보드에 복사되었습니다!');
+        } catch (err) {
+          showToast('주소를 직접 선택하여 복사해 주세요.');
+        }
+      });
+
+      // 모달 바깥 영역 클릭 시 닫기
+      [apiModal, shareModal].forEach(modal => {
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal) {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+          }
+        });
+      });
+    }
+
+    /**
+     * 10. QR 코드 생성 (현재 접속 주소 또는 예시 배포 주소)
+     */
+    function generateShareQR() {
+      const currentHref = window.location.href;
+      // 미리보기/로컬 환경일 경우 안내용 대표 배포 URL 예시 표시
+      const shareUrl = currentHref.startsWith('http')
+        ? currentHref
+        : 'https://munjeong-middle-meal.vercel.app';
+
+      document.getElementById('shareUrlInput').value = shareUrl;
+
+      const qrContainer = document.getElementById('qrcodeContainer');
+      qrContainer.innerHTML = '';
+      if (typeof QRCode !== 'undefined') {
+        new QRCode(qrContainer, {
+          text: shareUrl,
+          width: 112,
+          height: 112,
+          colorDark: '#2D3142',
+          colorLight: '#FFFFFF',
+          correctLevel: QRCode.CorrectLevel.M
+        });
+      }
+    }
+
+    /**
+     * 11. 토스트 알림 표시
+     */
+    let toastTimer = null;
+    function showToast(msg) {
+      const box = document.getElementById('toastBox');
+      const text = document.getElementById('toastMessage');
+      text.textContent = msg;
+      box.classList.remove('hidden');
+      box.classList.add('toast-anim');
+
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        box.classList.add('hidden');
+        box.classList.remove('toast-anim');
+      }, 2800);
+    }
+  </script>
+</body>
+</html>
